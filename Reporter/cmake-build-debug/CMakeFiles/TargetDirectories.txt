@@ -1,0 +1,3 @@
+C:/Users/GVL/CLionProjects/Lab_1/Reporter/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/GVL/CLionProjects/Lab_1/Reporter/cmake-build-debug/CMakeFiles/Reporter.dir
+C:/Users/GVL/CLionProjects/Lab_1/Reporter/cmake-build-debug/CMakeFiles/rebuild_cache.dir
