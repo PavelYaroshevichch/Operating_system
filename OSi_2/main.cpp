@@ -1,0 +1,98 @@
+#include <iostream>
+#include <windows.h>
+#include <process.h>
+using std::cout;
+using std::cin;
+using std::endl;
+
+struct Args {
+    int* arr;
+    int size;
+    int maxInd;
+    int minInd;
+    int avg;
+};
+
+UINT WINAPI min_max(void* p){
+    Args* args = static_cast<Args*>(p);
+    int n = args->size;
+    int* arr = args->arr;
+    int maxInd, minInd;
+    maxInd = minInd = 0;
+    for(int i = 1; i < n; i++) {
+        if(arr[maxInd] < arr[i]){
+            maxInd = i;
+        }
+        if(arr[minInd] > arr[i]){
+            minInd = i;
+        }
+        Sleep(7);
+    }
+    args->maxInd = maxInd;
+    args->minInd = minInd;
+    cout << "Max element: " << arr[maxInd] << endl;
+    cout << "Min element: " << arr[minInd] << endl;
+    return 0;
+}
+
+UINT WINAPI average(void* p){
+    Args* args = static_cast<Args*>(p);
+    int n = args->size;
+    int* arr = args->arr;
+    int sum = 0;
+    for(int i = 0; i < n; i++){
+        sum += arr[i];
+        Sleep(12);
+    }
+    args->avg = sum/n;
+    printf("Average value: %d \n", args->avg);
+    return 0;
+}
+
+void printArr(int* arr, int n){
+    for(int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+}
+
+int main() {
+    srand(time(0));
+    printf("Enter the number of elements in the array");
+    int n;
+    cin >> n;
+    int* arr = new int[n];
+    for(int i = 0; i < n; i++){
+        int z;
+        cout << "Enter " << i + 1 << " element\n";
+        cin >> z;
+        arr[i] =z;
+    }
+    printf("Generated array of %d elements: \n", n);
+    printArr(arr, n);
+    printf("\n\n");
+
+    Args* args = new Args();
+    args->size = n;
+    args->arr = arr;
+
+    HANDLE hmin_max;
+    hmin_max = (HANDLE)
+            _beginthreadex(NULL, 0, min_max, args, 0, NULL);
+    if(hmin_max == NULL) {
+        return GetLastError();
+    }
+
+    HANDLE havg;
+    havg = (HANDLE)
+            _beginthreadex(NULL, 0, average, args, 0, NULL);
+    if(havg == NULL){
+        return GetLastError();
+    }
+
+    WaitForSingleObject(hmin_max, INFINITE);
+    WaitForSingleObject(havg, INFINITE);
+
+    arr[args->minInd] = arr[args->maxInd] = args->avg;
+    cout << "\nChanged array: " << endl;
+    printArr(arr, n);
+    return 0;
+}
